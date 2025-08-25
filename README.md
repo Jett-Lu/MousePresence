@@ -78,7 +78,7 @@ If you prefer to build the `.exe` yourself:
 
 ```bash
 pip install pyinstaller pyautogui
-pyinstaller --onefile --noconsole --icon=MousePresence.ico --name MousePresence jiggle.py
+pyinstaller --onefile --noconsole --icon=MousePresence.ico --name MousePresence MousePresence.py
 ```
 
 The executable will be created in the `dist/` directory.
