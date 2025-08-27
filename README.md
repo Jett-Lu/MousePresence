@@ -57,7 +57,7 @@ Steps:
 
 1. Go to the [Releases](../../releases) section of this repository.
 2. Download the latest `MousePresence.exe`.
-3. Run it directly — no Python installation required.
+3. Run it directly, no Python installation required.
 
 ---
 
