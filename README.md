@@ -43,7 +43,7 @@ pip install pyautogui
 Run the application:
 
 ```bash
-python jiggle.py
+python MousePresence.py
 ```
 
 ---
