@@ -4,6 +4,8 @@ MousePresence is a Python application that prevents a workstation from registeri
 It works by moving the mouse pointer at configurable intervals in smooth, natural paths, simulating realistic user activity.
 A graphical user interface (Tkinter) allows settings to be adjusted in real time.
 
+<img width="1187" height="783" alt="image" src="https://github.com/user-attachments/assets/4b398609-b9c3-4666-aa1c-fe2bcf34b4b3" />
+
 ---
 
 ## Features
