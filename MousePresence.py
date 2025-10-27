@@ -8,10 +8,12 @@ import pyautogui
 
 def random_point(edge_margin):
     w, h = pyautogui.size()
+    safety_buffer = 10
     return (
-        random.randint(edge_margin, max(edge_margin, w - edge_margin)),
-        random.randint(edge_margin, max(edge_margin, h - edge_margin))
+        random.randint(edge_margin + safety_buffer, max(edge_margin + safety_buffer, w - edge_margin - safety_buffer)),
+        random.randint(edge_margin + safety_buffer, max(edge_margin + safety_buffer, h - edge_margin - safety_buffer))
     )
+
 
 def smooth_travel(path_points_min, path_points_max, total_travel_time, edge_margin, show_positions, log_fn):
     n_min = int(max(1, path_points_min))
