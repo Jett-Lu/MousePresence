@@ -3,7 +3,7 @@
 MousePresence is a Windows-focused Python application that prevents a workstation from registering as idle or AFK (away from keyboard).  
 It simulates realistic user activity by moving the mouse pointer at configurable intervals along smooth, natural paths.
 
-<img width="1096" height="787" alt="image" src="https://github.com/user-attachments/assets/dbc41157-aa68-469a-9669-ac9f6042cbaa" />
+<img width="256" height="256" alt="logo" src="https://github.com/user-attachments/assets/3523259d-f2ed-4594-b74b-122d32936c5c" />
 
 ---
 
@@ -28,6 +28,8 @@ It simulates realistic user activity by moving the mouse pointer at configurable
 - Status indicator and live log panel
 - Thread-safe logging with automatic size limits
 - Designed to stop cleanly without forcing system-level failsafes
+
+<img width="1096" height="787" alt="image" src="https://github.com/user-attachments/assets/dbc41157-aa68-469a-9669-ac9f6042cbaa" />
 
 ---
 
