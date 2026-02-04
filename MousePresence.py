@@ -20,16 +20,6 @@ def ease_in_out_quad(t):
     return 1 - pow(-2 * t + 2, 2) / 2
 
 
-def in_corner_zone(x, y, w, h, corner_px):
-    c = int(max(0, corner_px))
-    return (
-        (x <= c and y <= c) or
-        (x >= (w - 1 - c) and y <= c) or
-        (x <= c and y >= (h - 1 - c)) or
-        (x >= (w - 1 - c) and y >= (h - 1 - c))
-    )
-
-
 def safe_random_point(edge_margin, corner_safe_px):
     w, h = pyautogui.size()
     safe = max(0, int(edge_margin)) + max(0, int(corner_safe_px))
@@ -71,16 +61,12 @@ def pick_waypoints(n_points, edge_margin, corner_safe_px, min_step_px):
 
 
 def smooth_move_to(x, y, duration_s, tick_s, corner_safe_px, should_stop_fn):
-    w, h = pyautogui.size()
     start = pyautogui.position()
     end = (int(x), int(y))
 
     if duration_s <= 0:
         if should_stop_fn():
             return
-        cx, cy = pyautogui.position()
-        if in_corner_zone(cx, cy, w, h, corner_safe_px):
-            raise RuntimeError("Soft failsafe triggered: mouse in corner stop zone")
         pyautogui.moveTo(end[0], end[1], _pause=False)
         return
 
@@ -88,10 +74,6 @@ def smooth_move_to(x, y, duration_s, tick_s, corner_safe_px, should_stop_fn):
     for i in range(steps):
         if should_stop_fn():
             return
-
-        cx, cy = pyautogui.position()
-        if in_corner_zone(cx, cy, w, h, corner_safe_px):
-            raise RuntimeError("Soft failsafe triggered: mouse in corner stop zone")
 
         t = (i + 1) / steps
         et = ease_in_out_quad(t)
@@ -102,8 +84,6 @@ def smooth_move_to(x, y, duration_s, tick_s, corner_safe_px, should_stop_fn):
 
 
 def run_one_cycle(settings, log_fn, should_stop_fn):
-    w, h = pyautogui.size()
-
     n_base = int(max(1, settings["waypoints_base"]))
     n_var = int(max(0, settings["waypoints_var"]))
     n_min = max(1, n_base - n_var)
@@ -127,10 +107,6 @@ def run_one_cycle(settings, log_fn, should_stop_fn):
     for i, (x, y) in enumerate(waypoints, start=1):
         if should_stop_fn():
             return
-
-        cx, cy = pyautogui.position()
-        if in_corner_zone(cx, cy, w, h, corner_safe_px):
-            raise RuntimeError("Soft failsafe triggered: mouse in corner stop zone")
 
         smooth_move_to(x, y, per_segment, tick_s, corner_safe_px, should_stop_fn)
 
@@ -661,10 +637,6 @@ class JiggleApp(tk.Tk):
                 should_stop_fn=lambda: self.stop_event.is_set() or self.pause_event.is_set()
             )
             self._log("Move Now: completed.")
-        except RuntimeError as e:
-            self._set_status("StoppedByFailsafe")
-            self._log(str(e))
-            messagebox.showwarning("Stopped", str(e))
         except Exception as e:
             self._log(f"Error: {e}")
         finally:
@@ -686,11 +658,6 @@ class JiggleApp(tk.Tk):
                         log_fn=self._log,
                         should_stop_fn=lambda: self.stop_event.is_set() or self.pause_event.is_set()
                     )
-                except RuntimeError as e:
-                    self._log(str(e))
-                    self.stop_event.set()
-                    self.after(0, lambda: self._set_status("StoppedByFailsafe"))
-                    break
                 except Exception as e:
                     self._log(f"Error during movement: {e}")
 
