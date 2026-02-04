@@ -1,48 +1,60 @@
 # MousePresence
 
-MousePresence is a Python application that prevents a workstation from registering as idle or AFK (away from keyboard).
-It works by moving the mouse pointer at configurable intervals in smooth, natural paths, simulating realistic user activity.
-A graphical user interface (Tkinter) allows settings to be adjusted in real time.
+MousePresence is a Windows-focused Python application that prevents a workstation from registering as idle or AFK (away from keyboard).  
+It simulates realistic user activity by moving the mouse pointer at configurable intervals along smooth, natural paths.
 
-<img width="1187" height="783" alt="image" src="https://github.com/user-attachments/assets/4b398609-b9c3-4666-aa1c-fe2bcf34b4b3" />
+<img width="256" height="256" alt="logo" src="https://github.com/user-attachments/assets/3523259d-f2ed-4594-b74b-122d32936c5c" />
 
 ---
 
 ## Features
 
-* Graphical user interface built with Tkinter.
-* Adjustable settings:
+- Graphical user interface built with Tkinter
+- Smooth, human-like mouse movement using multiple waypoints
+- Real-time configurable settings:
+  - Interval between movement cycles (5 to 120 seconds)
+  - Total travel time per movement (0.2 to 10 seconds)
+  - Waypoint count with variance
+  - Edge margin to avoid screen edges
+  - Corner stop safety zone
+  - Minimum movement distance
+  - Movement tick rate (responsiveness versus CPU usage)
+- Start, Pause, Stop, and Move Now controls
+- Global stop-on-input:
+  - Any key press or mouse button click stops movement
+  - Mouse movement alone is ignored
+- UI-safe input suppression so buttons do not self-trigger a stop
+- Escape key instantly stops while the app window is focused
+- Status indicator and live log panel
+- Thread-safe logging with automatic size limits
+- Designed to stop cleanly without forcing system-level failsafes
 
-  * Interval between jiggle cycles (5–120 seconds).
-  * Travel time for each jiggle (0.2–10 seconds).
-  * Minimum and maximum number of waypoints per jiggle.
-  * Edge margin to keep movements away from screen edges.
-* Start, Pause, Stop, and "Move Now" controls.
-* Log panel displaying jiggle events and status updates.
-* Enlarged slider handles for ease of use.
-* PyAutoGUI failsafe enabled (moving the mouse to a screen corner stops the program).
+<img width="1096" height="787" alt="image" src="https://github.com/user-attachments/assets/dbc41157-aa68-469a-9669-ac9f6042cbaa" />
 
 ---
 
 ## Use Cases
 
-* Prevents a computer from going idle, sleeping, or showing "away" status.
-* Useful as an **anti-AFK tool**, as it moves the mouse in a way that resembles human movement.
-* Suitable for workstations, long-running sessions, or systems that disconnect when idle.
+- Prevents systems from sleeping or locking during long-running tasks
+- Keeps collaboration tools from marking the user as AFK
+- Useful for monitoring dashboards, training sessions, or kiosk-style setups
+- Safer alternative to hardware mouse jigglers
 
 ---
 
 ## Installation (Source Code)
 
-Clone the repository and install dependencies:
+### Requirements
+- Python 3.10 or newer
+- Windows operating system
+
+### Install dependencies
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/MousePresence.git
-cd MousePresence
-pip install pyautogui
+pip install pyautogui pynput
 ```
 
-Run the application:
+### Run the application
 
 ```bash
 python MousePresence.py
@@ -50,43 +62,86 @@ python MousePresence.py
 
 ---
 
-## Windows Executable
+## Controls Overview
 
-If you do not want to run the Python source, you can download the standalone **Windows .exe** from the
-[Releases](../../releases) page.
-
-Steps:
-
-1. Go to the [Releases](../../releases) section of this repository.
-2. Download the latest `MousePresence.exe`.
-3. Run it directly, no Python installation required.
+- Start: Begin periodic mouse movement
+- Pause or Resume: Temporarily halt movement
+- Stop: Stop all activity and reset to idle
+- Move Now: Perform a single movement cycle immediately
+- Escape: Immediate stop while the window is focused
+- Any key press or mouse click: Stops movement globally while active
 
 ---
 
 ## Settings Overview
 
-| Setting             | Range       | Description                           |
-| ------------------- | ----------- | ------------------------------------- |
-| Interval (seconds)  | 5 – 120     | Time between jiggle cycles            |
-| Travel time (sec)   | 0.2 – 10    | Duration of each jiggle               |
-| Waypoints (min/max) | 1 – 20 / 30 | Random intermediate points per jiggle |
-| Edge margin (px)    | 0 – 500     | Distance from screen edges to avoid   |
+| Setting | Range | Description |
+|------|------|------------|
+| Interval (seconds) | 5 to 120 | Time between movement cycles |
+| Travel time (seconds) | 0.2 to 10 | Duration of each movement cycle |
+| Waypoints (base and variance) | 1 to 30 | Randomized path complexity |
+| Edge margin (px) | 0 to 500 | Distance to keep away from screen edges |
+| Corner stop zone (px) | 5 to 250 | Emergency soft stop region |
+| Min step distance (px) | 0 to 800 | Prevents tiny jitter movements |
+| Move tick (ms) | 5 to 50 | Movement responsiveness |
+
+---
+
+## Windows Executable
+
+A standalone Windows executable is available in the Releases section.
+
+### Run the EXE
+- No Python installation required
+- Download and run MousePresence.exe directly
 
 ---
 
 ## Building Your Own Executable
 
-If you prefer to build the `.exe` yourself:
+### Install PyInstaller
 
 ```bash
-pip install pyinstaller pyautogui
-pyinstaller --onefile --noconsole --icon=MousePresence.ico --name MousePresence MousePresence.py
+pip install pyinstaller
 ```
 
-The executable will be created in the `dist/` directory.
+### Build single-file executable with icon
+
+```bash
+pyinstaller --onefile --noconsole --name MousePresence --icon MousePresence.ico MousePresence.py
+```
+
+The executable will be created in the dist directory.
+
+### If input hooks fail in the EXE
+
+```bash
+pyinstaller --onefile --noconsole ^
+  --hidden-import pynput.keyboard._win32 ^
+  --hidden-import pynput.mouse._win32 ^
+  --name MousePresence ^
+  MousePresence.py
+```
+
+---
+
+## Notes on Safety and Behavior
+
+- PyAutoGUI hard corner FAILSAFE is intentionally disabled
+- All stopping is handled in controlled software logic
+- Stop-on-input only triggers while movement is active
+- UI interactions are protected from accidental stops
+- Designed to shut down cleanly without abrupt cursor jumps
 
 ---
 
 ## License
 
 This project is licensed under the MIT License.
+
+---
+
+## Disclaimer
+
+This tool simulates user input.  
+Ensure usage complies with your organization’s policies and applicable terms of service.
