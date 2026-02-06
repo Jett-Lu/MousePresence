@@ -5,10 +5,8 @@ import datetime
 import tkinter as tk
 from tkinter import ttk, messagebox
 import pyautogui
-
 from pynput import keyboard as pynput_keyboard
 from pynput import mouse as pynput_mouse
-
 
 def clamp(n, lo, hi):
     return max(lo, min(hi, n))
@@ -129,7 +127,6 @@ class JiggleApp(tk.Tk):
         self.stop_event = threading.Event()
         self.pause_event = threading.Event()
 
-        # movement_active gates stop-on-input so it only triggers while the mouse is being controlled
         self.movement_active = threading.Event()
 
         self.interval_s = tk.DoubleVar(value=60.0)
@@ -149,7 +146,6 @@ class JiggleApp(tk.Tk):
         self._settings_lock = threading.Lock()
         self._settings = {}
 
-        # Stop-on-input controls
         self.stop_on_input = tk.BooleanVar(value=True)
         self._last_input_stop_ts = 0.0
         self._suppress_input_stop_until = 0.0
@@ -163,12 +159,8 @@ class JiggleApp(tk.Tk):
         self._set_status("Idle")
         self._update_status_line()
 
-        # Local immediate stop for focused window
         self.bind_all("<Escape>", lambda e: self._stop_from_ui("Escape pressed"))
 
-    # -----------------------
-    # Global input stop logic
-    # -----------------------
     def _start_user_input_listeners(self):
         try:
             kb_listener = pynput_keyboard.Listener(on_press=self._on_any_key)
@@ -203,21 +195,17 @@ class JiggleApp(tk.Tk):
             self._user_input_stop(f"Mouse click detected ({button})")
 
     def _user_input_stop(self, reason):
-        # Runs in pynput thread
         if not self.stop_on_input.get():
             return
 
-        # Only stop-on-input while movement is happening
         if not self.movement_active.is_set():
             return
 
         now = time.time()
 
-        # Suppress stop-on-input briefly after UI actions (Start, Move Now, etc.)
         if now < self._suppress_input_stop_until:
             return
 
-        # Very small debounce to avoid double firing from hardware chatter
         if (now - self._last_input_stop_ts) < 0.05:
             return
         self._last_input_stop_ts = now
@@ -233,7 +221,6 @@ class JiggleApp(tk.Tk):
         self._log(f"Stopped by user input: {reason}")
 
     def _suppress_input_stop(self, seconds=0.35):
-        # Called on UI thread
         self._suppress_input_stop_until = time.time() + float(seconds)
 
     def _stop_from_ui(self, reason):
@@ -245,9 +232,6 @@ class JiggleApp(tk.Tk):
         self._set_buttons_idle()
         self._log(f"Stopped by UI: {reason}")
 
-    # ----
-    # UI
-    # ----
     def _build_ui(self):
         outer = ttk.Frame(self, padding=12)
         outer.pack(fill="both", expand=True)
@@ -306,19 +290,18 @@ class JiggleApp(tk.Tk):
         self._add_scale_row(path, "Variance (+/-)", self.waypoints_var, 0, 15, 1, 1, is_int=True)
         self._add_scale_row(path, "Min step distance (px)", self.min_step_px, 0, 800, 5, 2, is_int=True)
 
-        self.safety = ttk.LabelFrame(grid, text="Safety", padding=10)
-        self.safety.grid(row=1, column=0, sticky="nsew", padx=(0, 8), pady=(8, 0))
-        self.safety.columnconfigure(1, weight=1)
+        safety = ttk.LabelFrame(grid, text="Safety", padding=10)
+        safety.grid(row=1, column=0, sticky="nsew", padx=(0, 8), pady=(8, 0))
+        safety.columnconfigure(1, weight=1)
 
-        self._add_scale_row(self.safety, "Edge margin avoidance (px)", self.edge_margin, 0, 500, 1, 0, is_int=True)
-        self._add_scale_row(self.safety, "Corner stop zone (px)", self.corner_safe_px, 5, 250, 1, 1, is_int=True)
+        self._add_scale_row(safety, "Edge margin avoidance (px)", self.edge_margin, 0, 500, 1, 0, is_int=True)
+        self._add_scale_row(safety, "Corner stop zone (px)", self.corner_safe_px, 5, 250, 1, 1, is_int=True)
 
-        self.safe_preview = ttk.Label(self.safety, text="Safe area: calculating...", padding=(0, 6))
+        self.safe_preview = ttk.Label(safety, text="Safe area: calculating...", padding=(0, 6))
         self.safe_preview.grid(row=2, column=0, columnspan=3, sticky="w")
 
-        # Stop on input checkbox
         self.stop_on_input_cb = ttk.Checkbutton(
-            self.safety, text="Stop on any key press or mouse click (mouse movement ignored)",
+            safety, text="Stop on any key press or mouse click (mouse movement ignored)",
             variable=self.stop_on_input
         )
         self.stop_on_input_cb.grid(row=3, column=0, columnspan=3, sticky="w", pady=(6, 0))
@@ -328,9 +311,9 @@ class JiggleApp(tk.Tk):
             "Press Escape in this window to stop immediately.\n"
             "Note: UI actions suppress stop-on-input briefly so Start and Move Now work normally."
         )
-        self.safety_help = ttk.Label(self.safety, text=help_txt, foreground="#374151", padding=(0, 6), justify="left")
+        self.safety_help = ttk.Label(safety, text=help_txt, foreground="#374151", padding=(0, 6), justify="left")
         self.safety_help.grid(row=4, column=0, columnspan=3, sticky="ew")
-        self.safety.bind("<Configure>", self._on_safety_resize)
+        safety.bind("<Configure>", self._on_safety_resize)
 
         logging = ttk.LabelFrame(grid, text="Logging", padding=10)
         logging.grid(row=1, column=1, sticky="nsew", padx=(8, 0), pady=(8, 0))
@@ -623,7 +606,6 @@ class JiggleApp(tk.Tk):
     def move_once(self):
         self._suppress_input_stop(0.45)
 
-        # ensure Move Now always runs even if previously stopped
         self.stop_event.clear()
         self.pause_event.clear()
 
