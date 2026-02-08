@@ -5,8 +5,6 @@ It simulates realistic user activity by moving the mouse pointer at configurable
 
 <img width="256" height="256" alt="logo" src="https://github.com/user-attachments/assets/3523259d-f2ed-4594-b74b-122d32936c5c" />
 
----
-
 ## Features
 
 - **Graphical user interface** built with Tkinter
@@ -32,16 +30,12 @@ It simulates realistic user activity by moving the mouse pointer at configurable
 
 <img width="1096" height="787" alt="image" src="https://github.com/user-attachments/assets/dbc41157-aa68-469a-9669-ac9f6042cbaa" />
 
----
-
 ## Use Cases
 
 - Prevents systems from sleeping or locking during long-running tasks
 - Keeps collaboration tools from marking the user as AFK
 - Useful for monitoring dashboards, training sessions, or kiosk-style setups
 - Safer alternative to hardware mouse jigglers
-
----
 
 ## Installation (Source Code)
 
@@ -58,8 +52,6 @@ pip install pyautogui pynput
 
 python MousePresence.py
 
----
-
 ## Controls Overview
 
 - **Start**: Begin periodic mouse movement  
@@ -68,8 +60,6 @@ python MousePresence.py
 - **Move Now**: Perform a single movement cycle immediately  
 - **Escape**: Immediate stop while the window is focused  
 - **Any key press or mouse click**: Stops movement globally while active  
-
----
 
 ## Settings Overview
 
@@ -83,8 +73,6 @@ Corner stop zone (px) | 5 to 250 | Emergency soft stop region
 Min step distance (px) | 0 to 800 | Prevents tiny jitter movements  
 Move tick (ms) | 5 to 50 | Movement responsiveness  
 
----
-
 ## Windows Executable
 
 A standalone Windows executable is available in the **Releases** section.
@@ -93,8 +81,6 @@ A standalone Windows executable is available in the **Releases** section.
 
 - No Python installation required  
 - Download and run `MousePresence.exe` directly  
-
----
 
 ## Building Your Own Executable
 
@@ -116,8 +102,6 @@ pyinstaller --onefile --noconsole ^
   --name MousePresence ^
   MousePresence.py
 
----
-
 ## Notes on Safety and Behavior
 
 - PyAutoGUI hard corner FAILSAFE is intentionally disabled  
@@ -126,13 +110,9 @@ pyinstaller --onefile --noconsole ^
 - UI interactions are protected from accidental stops  
 - Designed to shut down cleanly without abrupt cursor jumps  
 
----
-
 ## License
 
 This project is licensed under the MIT License.
-
----
 
 ## Disclaimer
 
